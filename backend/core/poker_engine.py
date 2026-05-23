@@ -10,8 +10,8 @@ from dataclasses import dataclass, field
 from typing import Optional
 import time
 
-from .deck import Deck, Card, new_shuffled_deck, cards_to_dict, cards_from_dict
-from .hand_evaluator import evaluate_hand, compare_hands, HandResult
+from deck import Deck, Card, new_shuffled_deck, cards_to_dict, cards_from_dict
+from hand_evaluator import evaluate_hand, compare_hands, HandResult
 import config
 
 
