@@ -15,7 +15,7 @@ CREATE TABLE users (
     username            TEXT,                       -- @username de Telegram (puede ser NULL si no tiene)
     display_name        TEXT    NOT NULL,           -- first_name de Telegram como fallback
     avatar_url          TEXT,                       -- URL de foto de perfil (actualizable)
-    balance             INTEGER NOT NULL DEFAULT 0, -- Saldo interno en centavos (evita decimales flotantes)
+    balance             INTEGER NOT NULL DEFAULT 1000, -- Saldo interno en centavos (evita decimales flotantes)
     language_code       TEXT    NOT NULL DEFAULT 'es', -- Código ISO del idioma tomado de Telegram
 
     -- Estado de sesión
