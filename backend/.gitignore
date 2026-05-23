@@ -1,0 +1,23 @@
+# Entorno
+.env
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Base de datos
+*.db
+*.sqlite3
+
+# Entornos virtuales
+venv/
+.venv/
+
+# Editores
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db

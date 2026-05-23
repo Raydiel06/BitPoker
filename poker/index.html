@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Poker — Mesa 1v1</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+  <!-- Styles (order matters) -->
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/sheet.css">
+</head>
+<body>
+
+<!-- ── MENU BUTTON ── -->
+<button class="btn-menu" id="menu-btn">
+  <span></span><span></span><span></span>
+</button>
+
+<!-- ══════════════════════════════
+     TOP — Opponent
+══════════════════════════════ -->
+<div class="top-section">
+  <div class="opponent-block">
+
+    <div class="hand-cards" style="justify-content:center;">
+      <div class="card back"></div>
+      <div class="card back"></div>
+    </div>
+
+    <div class="player-row">
+      <div class="player-pill">
+        <div class="avatar">🎭</div>
+        <div>
+          <div class="player-name">@raven_mk</div>
+          <div class="player-balance">$840.00</div>
+        </div>
+        <div class="dealer-badge">D</div>
+      </div>
+      <div class="bet-tag">Apuesta $40</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     MID — Table
+══════════════════════════════ -->
+<div class="mid-section">
+  <div class="table-wrap">
+    <div class="table-rail"></div>
+    <div class="table-felt">
+      <div class="community-zone">
+
+        <div class="community-cards">
+          <div class="card red">
+            <div class="tl">A<br>♥</div>
+            <div class="center">♥</div>
+            <div class="br">A<br>♥</div>
+          </div>
+          <div class="card black">
+            <div class="tl">K<br>♠</div>
+            <div class="center">♠</div>
+            <div class="br">K<br>♠</div>
+          </div>
+          <div class="card red">
+            <div class="tl">7<br>♦</div>
+            <div class="center">♦</div>
+            <div class="br">7<br>♦</div>
+          </div>
+          <div class="card back"></div>
+          <div class="card back"></div>
+        </div>
+
+        <div class="pot-display">
+          <div class="pot-chips">
+            <div class="chip r"></div>
+            <div class="chip b"></div>
+            <div class="chip k"></div>
+          </div>
+          <span class="pot-label">Pot</span>
+          <span class="pot-amount">$160.00</span>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     BOT — Timer + Self + Actions
+══════════════════════════════ -->
+<div class="bot-section">
+
+  <!-- Timer -->
+  <div class="timer-block">
+    <div class="turn-label">
+      <div class="turn-dot" id="turn-dot"></div>
+      <span>Tu turno</span>
+      <span class="timer-seconds" id="timer-seconds">30s</span>
+    </div>
+    <div class="timer-track">
+      <div class="timer-fill" id="timer-fill"></div>
+    </div>
+  </div>
+
+  <!-- Self -->
+  <div class="self-block">
+
+    <div class="self-left">
+      <div class="player-row" style="justify-content:flex-start;">
+        <div class="player-pill">
+          <div class="avatar">😎</div>
+          <div>
+            <div class="player-name">@tú · SB</div>
+            <div class="player-balance">$760.00</div>
+          </div>
+        </div>
+        <div class="bet-tag">Apuesta $40</div>
+      </div>
+      <div class="hand-cards">
+        <div class="card red">
+          <div class="tl">A<br>♦</div>
+          <div class="center">♦</div>
+          <div class="br">A<br>♦</div>
+        </div>
+        <div class="card black">
+          <div class="tl">A<br>♣</div>
+          <div class="center">♣</div>
+          <div class="br">A<br>♣</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="self-right">
+      <div class="action-btns">
+        <button class="btn-action btn-fold">Fold</button>
+        <button class="btn-action btn-call">Call $40</button>
+        <button class="btn-action btn-raise-t" id="raise-toggle">Raise ↑</button>
+      </div>
+      <div class="raise-panel" id="raise-panel">
+        <div class="raise-top">
+          <span class="raise-label">Raise</span>
+          <input type="range" id="raise-slider" min="80" max="760" value="120">
+          <input type="number" id="raise-input" class="raise-input" min="80" max="760" value="120" placeholder="$">
+        </div>
+        <div class="raise-bottom">
+          <button class="btn-action btn-raise-t btn-confirm">Confirmar</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     BOTTOM SHEET
+══════════════════════════════ -->
+<div class="sheet-overlay" id="sheet-overlay"></div>
+<div class="bottom-sheet" id="bottom-sheet">
+
+  <div class="sheet-handle"></div>
+
+  <div class="sheet-header">
+    <span class="sheet-title">Menú</span>
+    <button class="btn-sheet-close" id="sheet-close">✕</button>
+  </div>
+
+  <div class="sheet-tabs">
+    <button class="sheet-tab active" data-tab="guide">Guía de manos</button>
+    <button class="sheet-tab" data-tab="surrender">Rendirse</button>
+  </div>
+
+  <div class="sheet-body">
+
+    <!-- TAB: Hand guide -->
+    <div class="tab-panel active" id="tab-guide">
+
+      <div class="hand-row">
+        <div class="hand-rank">1</div>
+        <div class="hand-info"><div class="hand-name">Escalera Real</div><div class="hand-desc">A K Q J 10 del mismo palo</div></div>
+        <div class="hand-cards-mini">
+          <div class="mc red"><div class="mt">A<br>♥</div><div class="ms">♥</div><div class="mb">A<br>♥</div></div>
+          <div class="mc red"><div class="mt">K<br>♥</div><div class="ms">♥</div><div class="mb">K<br>♥</div></div>
+          <div class="mc red"><div class="mt">Q<br>♥</div><div class="ms">♥</div><div class="mb">Q<br>♥</div></div>
+          <div class="mc red"><div class="mt">J<br>♥</div><div class="ms">♥</div><div class="mb">J<br>♥</div></div>
+          <div class="mc red"><div class="mt">10<br>♥</div><div class="ms">♥</div><div class="mb">10<br>♥</div></div>
+        </div>
+      </div>
+
+      <div class="hand-row">
+        <div class="hand-rank">2</div>
+        <div class="hand-info"><div class="hand-name">Escalera de Color</div><div class="hand-desc">5 consecutivas del mismo palo</div></div>
+        <div class="hand-cards-mini">
+          <div class="mc black"><div class="mt">9<br>♠</div><div class="ms">♠</div><div class="mb">9<br>♠</div></div>
+          <div class="mc black"><div class="mt">8<br>♠</div><div class="ms">♠</div><div class="mb">8<br>♠</div></div>
+          <div class="mc black"><div class="mt">7<br>♠</div><div class="ms">♠</div><div class="mb">7<br>♠</div></div>
+          <div class="mc black"><div class="mt">6<br>♠</div><div class="ms">♠</div><div class="mb">6<br>♠</div></div>
+          <div class="mc black"><div class="mt">5<br>♠</div><div class="ms">♠</div><div class="mb">5<br>♠</div></div>
+        </div>
+      </div>
+
+      <div class="hand-row">
+        <div class="hand-rank">3</div>
+        <div class="hand-info"><div class="hand-name">Póker</div><div class="hand-desc">4 cartas del mismo valor</div></div>
+        <div class="hand-cards-mini">
+          <div class="mc black"><div class="mt">A<br>♠</div><div class="ms">♠</div><div class="mb">A<br>♠</div></div>
+          <div class="mc red"><div class="mt">A<br>♥</div><div class="ms">♥</div><div class="mb">A<br>♥</div></div>
+          <div class="mc red"><div class="mt">A<br>♦</div><div class="ms">♦</div><div class="mb">A<br>♦</div></div>
+          <div class="mc black"><div class="mt">A<br>♣</div><div class="ms">♣</div><div class="mb">A<br>♣</div></div>
+          <div class="mc black"><div class="mt">K<br>♠</div><div class="ms">♠</div><div class="mb">K<br>♠</div></div>
+        </div>
+      </div>
+
+      <div class="hand-row">
+        <div class="hand-rank">4</div>
+        <div class="hand-info"><div class="hand-name">Full House</div><div class="hand-desc">Trío + pareja</div></div>
+        <div class="hand-cards-mini">
+          <div class="mc black"><div class="mt">K<br>♠</div><div class="ms">♠</div><div class="mb">K<br>♠</div></div>
+          <div class="mc red"><div class="mt">K<br>♥</div><div class="ms">♥</div><div class="mb">K<br>♥</div></div>
+          <div class="mc black"><div class="mt">K<br>♣</div><div class="ms">♣</div><div class="mb">K<br>♣</div></div>
+          <div class="mc red"><div class="mt">Q<br>♦</div><div class="ms">♦</div><div class="mb">Q<br>♦</div></div>
+          <div class="mc black"><div class="mt">Q<br>♠</div><div class="ms">♠</div><div class="mb">Q<br>♠</div></div>
+        </div>
+      </div>
+
+      <div class="hand-row">
+        <div class="hand-rank">5</div>
+        <div class="hand-info"><div class="hand-name">Color (Flush)</div><div class="hand-desc">5 cartas del mismo palo</div></div>
+        <div class="hand-cards-mini">
+          <div class="mc red"><div class="mt">A<br>♦</div><div class="ms">♦</div><div class="mb">A<br>♦</div></div>
+          <div class="mc red"><div class="mt">J<br>♦</div><div class="ms">♦</div><div class="mb">J<br>♦</div></div>
+          <div class="mc red"><div class="mt">8<br>♦</div><div class="ms">♦</div><div class="mb">8<br>♦</div></div>
+          <div class="mc red"><div class="mt">5<br>♦</div><div class="ms">♦</div><div class="mb">5<br>♦</div></div>
+          <div class="mc red"><div class="mt">2<br>♦</div><div class="ms">♦</div><div class="mb">2<br>♦</div></div>
+        </div>
+      </div>
+
+      <div class="hand-row">
+        <div class="hand-rank">6</div>
+        <div class="hand-info"><div class="hand-name">Escalera (Straight)</div><div class="hand-desc">5 cartas consecutivas</div></div>
+        <div class="hand-cards-mini">
+          <div class="mc black"><div class="mt">9<br>♠</div><div class="ms">♠</div><div class="mb">9<br>♠</div></div>
+          <div class="mc red"><div class="mt">8<br>♥</div><div class="ms">♥</div><div class="mb">8<br>♥</div></div>
+          <div class="mc black"><div class="mt">7<br>♣</div><div class="ms">♣</div><div class="mb">7<br>♣</div></div>
+          <div class="mc red"><div class="mt">6<br>♦</div><div class="ms">♦</div><div class="mb">6<br>♦</div></div>
+          <div class="mc black"><div class="mt">5<br>♠</div><div class="ms">♠</div><div class="mb">5<br>♠</div></div>
+        </div>
+      </div>
+
+      <div class="hand-row">
+        <div class="hand-rank">7</div>
+        <div class="hand-info"><div class="hand-name">Trío</div><div class="hand-desc">3 cartas del mismo valor</div></div>
+        <div class="hand-cards-mini">
+          <div class="mc black"><div class="mt">8<br>♠</div><div class="ms">♠</div><div class="mb">8<br>♠</div></div>
+          <div class="mc red"><div class="mt">8<br>♥</div><div class="ms">♥</div><div class="mb">8<br>♥</div></div>
+          <div class="mc black"><div class="mt">8<br>♣</div><div class="ms">♣</div><div class="mb">8<br>♣</div></div>
+          <div class="mc red"><div class="mt">K<br>♦</div><div class="ms">♦</div><div class="mb">K<br>♦</div></div>
+          <div class="mc black"><div class="mt">3<br>♠</div><div class="ms">♠</div><div class="mb">3<br>♠</div></div>
+        </div>
+      </div>
+
+      <div class="hand-row">
+        <div class="hand-rank">8</div>
+        <div class="hand-info"><div class="hand-name">Doble Pareja</div><div class="hand-desc">2 parejas distintas</div></div>
+        <div class="hand-cards-mini">
+          <div class="mc black"><div class="mt">J<br>♠</div><div class="ms">♠</div><div class="mb">J<br>♠</div></div>
+          <div class="mc red"><div class="mt">J<br>♥</div><div class="ms">♥</div><div class="mb">J<br>♥</div></div>
+          <div class="mc red"><div class="mt">4<br>♦</div><div class="ms">♦</div><div class="mb">4<br>♦</div></div>
+          <div class="mc black"><div class="mt">4<br>♣</div><div class="ms">♣</div><div class="mb">4<br>♣</div></div>
+          <div class="mc black"><div class="mt">A<br>♠</div><div class="ms">♠</div><div class="mb">A<br>♠</div></div>
+        </div>
+      </div>
+
+      <div class="hand-row">
+        <div class="hand-rank">9</div>
+        <div class="hand-info"><div class="hand-name">Pareja</div><div class="hand-desc">2 cartas del mismo valor</div></div>
+        <div class="hand-cards-mini">
+          <div class="mc black"><div class="mt">Q<br>♠</div><div class="ms">♠</div><div class="mb">Q<br>♠</div></div>
+          <div class="mc red"><div class="mt">Q<br>♥</div><div class="ms">♥</div><div class="mb">Q<br>♥</div></div>
+          <div class="mc black"><div class="mt">9<br>♣</div><div class="ms">♣</div><div class="mb">9<br>♣</div></div>
+          <div class="mc red"><div class="mt">5<br>♦</div><div class="ms">♦</div><div class="mb">5<br>♦</div></div>
+          <div class="mc black"><div class="mt">2<br>♠</div><div class="ms">♠</div><div class="mb">2<br>♠</div></div>
+        </div>
+      </div>
+
+      <div class="hand-row">
+        <div class="hand-rank">10</div>
+        <div class="hand-info"><div class="hand-name">Carta Alta</div><div class="hand-desc">Ninguna combinación</div></div>
+        <div class="hand-cards-mini">
+          <div class="mc red"><div class="mt">A<br>♥</div><div class="ms">♥</div><div class="mb">A<br>♥</div></div>
+          <div class="mc black"><div class="mt">J<br>♠</div><div class="ms">♠</div><div class="mb">J<br>♠</div></div>
+          <div class="mc red"><div class="mt">8<br>♦</div><div class="ms">♦</div><div class="mb">8<br>♦</div></div>
+          <div class="mc black"><div class="mt">5<br>♣</div><div class="ms">♣</div><div class="mb">5<br>♣</div></div>
+          <div class="mc red"><div class="mt">2<br>♥</div><div class="ms">♥</div><div class="mb">2<br>♥</div></div>
+        </div>
+      </div>
+
+    </div><!-- /tab-guide -->
+
+    <!-- TAB: Surrender -->
+    <div class="tab-panel" id="tab-surrender">
+      <div class="surrender-body">
+        <div class="surrender-icon">🏳️</div>
+        <div class="surrender-title">¿Rendirse?</div>
+        <div class="surrender-desc">Perderás todo lo apostado en esta mano y el pot pasará a tu oponente.</div>
+        <div class="surrender-warning">⚠️ Rendirse frecuentemente puede resultar en una restricción temporal para crear salas.</div>
+        <div class="surrender-btns">
+          <button class="btn-surrender-confirm" id="btn-surrender-yes">Sí, rendirme</button>
+          <button class="btn-surrender-cancel"  id="btn-surrender-no">Cancelar</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /sheet-body -->
+</div><!-- /bottom-sheet -->
+
+<!-- Telegram Mini App SDK -->
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+<!-- Scripts (order matters) -->
+<script src="js/timer.js"></script>
+<script src="js/raise.js"></script>
+<script src="js/sheet.js"></script>
+<script src="js/api.js"></script>
+<script src="js/game.js"></script>
+
+</body>
+</html>
