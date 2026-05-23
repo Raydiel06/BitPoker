@@ -11,7 +11,7 @@
 
 const API = (() => {
   // ── CONFIG ──────────────────────────────────────────
-  const BASE_URL = 'https://bitpoker-production.up.railway.app';  // reemplazar en producción
+  const BASE_URL = 'https:/bitpoker-production-6d91.up.railway.app';  // reemplazar en producción
   const MAX_RETRIES = 3;
   const RETRY_DELAY_MS = 1200;  // espera entre reintentos
 
