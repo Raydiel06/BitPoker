@@ -11,7 +11,7 @@ from itertools import combinations
 from dataclasses import dataclass
 from typing import Optional
 
-from deck import Card
+from core.deck import Card
 
 
 # ══════════════════════════════════════════════════════
