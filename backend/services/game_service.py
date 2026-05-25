@@ -22,9 +22,6 @@ def create_game(db: Connection, creator_id: int) -> dict:
     Crea una partida nueva y devuelve el link de invitación.
     Valida que el usuario no esté baneado ni en otra partida.
     """
-    import logging
-    log = logging.getLogger(__name__)
-    log.info(f"MINI_APP_URL actual: {config.MINI_APP_URL}")
     # Validar ban
     banned, until = models.is_user_banned(db, creator_id)
     if banned:
