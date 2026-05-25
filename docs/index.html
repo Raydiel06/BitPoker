@@ -4,159 +4,253 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Poker — Mesa 1v1</title>
-
-  <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-
-  <!-- Styles (order matters) -->
   <link rel="stylesheet" href="css/variables.css">
   <link rel="stylesheet" href="css/animations.css">
   <link rel="stylesheet" href="css/layout.css">
   <link rel="stylesheet" href="css/components.css">
   <link rel="stylesheet" href="css/sheet.css">
+  <style>
+    /* ── PANTALLA DE ESPERA ── */
+    #waiting-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 300;
+      background: radial-gradient(ellipse at 50% 20%, #1f0808 0%, #0a0303 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      padding: 32px;
+    }
+
+    #waiting-screen.hidden { display: none; }
+
+    .waiting-icon {
+      font-size: 56px;
+      animation: waitPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes waitPulse {
+      0%, 100% { transform: scale(1);   opacity: 1;    }
+      50%       { transform: scale(1.1); opacity: 0.75; }
+    }
+
+    .waiting-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px;
+      color: #e8c98e;
+      text-align: center;
+    }
+
+    .waiting-desc {
+      font-size: 14px;
+      color: rgba(245,240,232,0.5);
+      text-align: center;
+      line-height: 1.6;
+      max-width: 260px;
+    }
+
+    .waiting-link-box {
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 14px;
+      padding: 12px 16px;
+      width: 100%;
+      max-width: 320px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .waiting-link-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: rgba(245,240,232,0.4);
+    }
+
+    .waiting-link-url {
+      font-size: 12px;
+      color: #e8c98e;
+      word-break: break-all;
+      line-height: 1.4;
+    }
+
+    .btn-copy-link {
+      padding: 10px;
+      border-radius: 11px;
+      background: rgba(200,169,110,0.2);
+      border: 1px solid rgba(200,169,110,0.35);
+      color: #e8c98e;
+      font-size: 13px;
+      font-family: 'DM Sans', sans-serif;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .btn-copy-link:active { background: rgba(200,169,110,0.35); }
+
+    .waiting-dots {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+    .waiting-dots span {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: rgba(200,169,110,0.5);
+      animation: dotBounce 1.2s ease-in-out infinite;
+    }
+    .waiting-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .waiting-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes dotBounce {
+      0%, 80%, 100% { transform: scale(1);   opacity: 0.5; }
+      40%            { transform: scale(1.4); opacity: 1;   }
+    }
+
+    /* ── MESA OCULTA AL INICIO ── */
+    #game-screen { display: none; }
+    #game-screen.visible { display: contents; }
+  </style>
 </head>
 <body>
 
-<!-- ── MENU BUTTON ── -->
-<button class="btn-menu" id="menu-btn">
-  <span></span><span></span><span></span>
-</button>
-
 <!-- ══════════════════════════════
-     TOP — Opponent
+     PANTALLA DE ESPERA
 ══════════════════════════════ -->
-<div class="top-section">
-  <div class="opponent-block">
+<div id="waiting-screen">
+  <div class="waiting-icon">🃏</div>
+  <div class="waiting-title">Esperando oponente</div>
+  <div class="waiting-desc">
+    Comparte el link con tu rival.<br>
+    La partida comenzará cuando él se una.
+  </div>
 
-    <div class="hand-cards" style="justify-content:center;">
-      <div class="card back"></div>
-      <div class="card back"></div>
-    </div>
+  <div class="waiting-link-box">
+    <div class="waiting-link-label">Link de invitación</div>
+    <div class="waiting-link-url" id="waiting-invite-url">—</div>
+    <button class="btn-copy-link" id="btn-copy-invite">📋 Copiar link</button>
+  </div>
 
-    <div class="player-row">
-      <div class="player-pill">
-        <div class="avatar">🎭</div>
-        <div>
-          <div class="player-name">@raven_mk</div>
-          <div class="player-balance">$840.00</div>
-        </div>
-        <div class="dealer-badge">D</div>
-      </div>
-      <div class="bet-tag">Apuesta $40</div>
-    </div>
-
+  <div class="waiting-dots">
+    <span></span><span></span><span></span>
   </div>
 </div>
 
 <!-- ══════════════════════════════
-     MID — Table
+     MESA DE JUEGO (oculta hasta que la partida esté activa)
 ══════════════════════════════ -->
-<div class="mid-section">
-  <div class="table-wrap">
-    <div class="table-rail"></div>
-    <div class="table-felt">
-      <div class="community-zone">
+<div id="game-screen">
 
-        <div class="community-cards">
-          <div class="card red">
-            <div class="tl">A<br>♥</div>
-            <div class="center">♥</div>
-            <div class="br">A<br>♥</div>
-          </div>
-          <div class="card black">
-            <div class="tl">K<br>♠</div>
-            <div class="center">♠</div>
-            <div class="br">K<br>♠</div>
-          </div>
-          <div class="card red">
-            <div class="tl">7<br>♦</div>
-            <div class="center">♦</div>
-            <div class="br">7<br>♦</div>
-          </div>
-          <div class="card back"></div>
-          <div class="card back"></div>
-        </div>
+  <!-- MENU -->
+  <button class="btn-menu" id="menu-btn">
+    <span></span><span></span><span></span>
+  </button>
 
-        <div class="pot-display">
-          <div class="pot-chips">
-            <div class="chip r"></div>
-            <div class="chip b"></div>
-            <div class="chip k"></div>
-          </div>
-          <span class="pot-label">Pot</span>
-          <span class="pot-amount">$160.00</span>
-        </div>
-
+  <!-- TOP — Opponent -->
+  <div class="top-section">
+    <div class="opponent-block">
+      <div class="hand-cards" id="opponent-cards" style="justify-content:center;">
+        <div class="card back"></div>
+        <div class="card back"></div>
       </div>
-    </div>
-  </div>
-</div>
-
-<!-- ══════════════════════════════
-     BOT — Timer + Self + Actions
-══════════════════════════════ -->
-<div class="bot-section">
-
-  <!-- Timer -->
-  <div class="timer-block">
-    <div class="turn-label">
-      <div class="turn-dot" id="turn-dot"></div>
-      <span>Tu turno</span>
-      <span class="timer-seconds" id="timer-seconds">30s</span>
-    </div>
-    <div class="timer-track">
-      <div class="timer-fill" id="timer-fill"></div>
-    </div>
-  </div>
-
-  <!-- Self -->
-  <div class="self-block">
-
-    <div class="self-left">
-      <div class="player-row" style="justify-content:flex-start;">
+      <div class="player-row">
         <div class="player-pill">
-          <div class="avatar">😎</div>
+          <div class="avatar" id="opponent-avatar">🎭</div>
           <div>
-            <div class="player-name">@tú · SB</div>
-            <div class="player-balance">$760.00</div>
+            <div class="player-name"  id="opponent-name">—</div>
+            <div class="player-balance" id="opponent-balance">—</div>
           </div>
+          <div class="dealer-badge" id="opponent-dealer" style="display:none;">D</div>
         </div>
-        <div class="bet-tag">Apuesta $40</div>
+        <div class="bet-tag" id="opponent-bet">Apuesta $0</div>
       </div>
-      <div class="hand-cards">
-        <div class="card red">
-          <div class="tl">A<br>♦</div>
-          <div class="center">♦</div>
-          <div class="br">A<br>♦</div>
-        </div>
-        <div class="card black">
-          <div class="tl">A<br>♣</div>
-          <div class="center">♣</div>
-          <div class="br">A<br>♣</div>
+    </div>
+  </div>
+
+  <!-- MID — Table -->
+  <div class="mid-section">
+    <div class="table-wrap">
+      <div class="table-rail"></div>
+      <div class="table-felt">
+        <div class="community-zone">
+          <div class="community-cards" id="community-cards">
+            <div class="card back"></div>
+            <div class="card back"></div>
+            <div class="card back"></div>
+            <div class="card back"></div>
+            <div class="card back"></div>
+          </div>
+          <div class="pot-display">
+            <div class="pot-chips">
+              <div class="chip r"></div>
+              <div class="chip b"></div>
+              <div class="chip k"></div>
+            </div>
+            <span class="pot-label">Pot</span>
+            <span class="pot-amount" id="pot-amount">$0.00</span>
+          </div>
         </div>
       </div>
     </div>
+  </div>
 
-    <div class="self-right">
-      <div class="action-btns">
-        <button class="btn-action btn-fold">Fold</button>
-        <button class="btn-action btn-call">Call $40</button>
-        <button class="btn-action btn-raise-t" id="raise-toggle">Raise ↑</button>
+  <!-- BOT — Timer + Self + Actions -->
+  <div class="bot-section">
+
+    <div class="timer-block">
+      <div class="turn-label">
+        <div class="turn-dot" id="turn-dot"></div>
+        <span id="turn-label-text">Esperando...</span>
+        <span class="timer-seconds" id="timer-seconds">—</span>
       </div>
-      <div class="raise-panel" id="raise-panel">
-        <div class="raise-top">
-          <span class="raise-label">Raise</span>
-          <input type="range" id="raise-slider" min="80" max="760" value="120">
-          <input type="number" id="raise-input" class="raise-input" min="80" max="760" value="120" placeholder="$">
+      <div class="timer-track">
+        <div class="timer-fill" id="timer-fill"></div>
+      </div>
+    </div>
+
+    <div class="self-block">
+      <div class="self-left">
+        <div class="player-row" style="justify-content:flex-start;">
+          <div class="player-pill">
+            <div class="avatar" id="my-avatar">😎</div>
+            <div>
+              <div class="player-name"    id="my-name">—</div>
+              <div class="player-balance" id="my-balance">—</div>
+            </div>
+          </div>
+          <div class="bet-tag" id="my-bet">Apuesta $0</div>
         </div>
-        <div class="raise-bottom">
-          <button class="btn-action btn-raise-t btn-confirm">Confirmar</button>
+        <div class="hand-cards" id="my-cards">
+          <div class="card back"></div>
+          <div class="card back"></div>
+        </div>
+      </div>
+
+      <div class="self-right">
+        <div class="action-btns" id="action-btns">
+          <button class="btn-action btn-fold"   id="btn-fold">Fold</button>
+          <button class="btn-action btn-call"   id="btn-call">Call</button>
+          <button class="btn-action btn-raise-t" id="raise-toggle">Raise ↑</button>
+        </div>
+        <div class="raise-panel" id="raise-panel">
+          <div class="raise-top">
+            <span class="raise-label">Raise</span>
+            <input type="range"  id="raise-slider" min="80" max="760" value="120">
+            <input type="number" id="raise-input" class="raise-input" min="80" max="760" value="120" placeholder="$">
+          </div>
+          <div class="raise-bottom">
+            <button class="btn-action btn-raise-t btn-confirm" id="btn-confirm">Confirmar</button>
+          </div>
         </div>
       </div>
     </div>
 
   </div>
-</div>
+
+</div><!-- /game-screen -->
 
 <!-- ══════════════════════════════
      BOTTOM SHEET
@@ -165,7 +259,6 @@
 <div class="bottom-sheet" id="bottom-sheet">
 
   <div class="sheet-handle"></div>
-
   <div class="sheet-header">
     <span class="sheet-title">Menú</span>
     <button class="btn-sheet-close" id="sheet-close">✕</button>
@@ -178,9 +271,7 @@
 
   <div class="sheet-body">
 
-    <!-- TAB: Hand guide -->
     <div class="tab-panel active" id="tab-guide">
-
       <div class="hand-row">
         <div class="hand-rank">1</div>
         <div class="hand-info"><div class="hand-name">Escalera Real</div><div class="hand-desc">A K Q J 10 del mismo palo</div></div>
@@ -192,7 +283,6 @@
           <div class="mc red"><div class="mt">10<br>♥</div><div class="ms">♥</div><div class="mb">10<br>♥</div></div>
         </div>
       </div>
-
       <div class="hand-row">
         <div class="hand-rank">2</div>
         <div class="hand-info"><div class="hand-name">Escalera de Color</div><div class="hand-desc">5 consecutivas del mismo palo</div></div>
@@ -204,7 +294,6 @@
           <div class="mc black"><div class="mt">5<br>♠</div><div class="ms">♠</div><div class="mb">5<br>♠</div></div>
         </div>
       </div>
-
       <div class="hand-row">
         <div class="hand-rank">3</div>
         <div class="hand-info"><div class="hand-name">Póker</div><div class="hand-desc">4 cartas del mismo valor</div></div>
@@ -216,7 +305,6 @@
           <div class="mc black"><div class="mt">K<br>♠</div><div class="ms">♠</div><div class="mb">K<br>♠</div></div>
         </div>
       </div>
-
       <div class="hand-row">
         <div class="hand-rank">4</div>
         <div class="hand-info"><div class="hand-name">Full House</div><div class="hand-desc">Trío + pareja</div></div>
@@ -228,7 +316,6 @@
           <div class="mc black"><div class="mt">Q<br>♠</div><div class="ms">♠</div><div class="mb">Q<br>♠</div></div>
         </div>
       </div>
-
       <div class="hand-row">
         <div class="hand-rank">5</div>
         <div class="hand-info"><div class="hand-name">Color (Flush)</div><div class="hand-desc">5 cartas del mismo palo</div></div>
@@ -240,7 +327,6 @@
           <div class="mc red"><div class="mt">2<br>♦</div><div class="ms">♦</div><div class="mb">2<br>♦</div></div>
         </div>
       </div>
-
       <div class="hand-row">
         <div class="hand-rank">6</div>
         <div class="hand-info"><div class="hand-name">Escalera (Straight)</div><div class="hand-desc">5 cartas consecutivas</div></div>
@@ -252,7 +338,6 @@
           <div class="mc black"><div class="mt">5<br>♠</div><div class="ms">♠</div><div class="mb">5<br>♠</div></div>
         </div>
       </div>
-
       <div class="hand-row">
         <div class="hand-rank">7</div>
         <div class="hand-info"><div class="hand-name">Trío</div><div class="hand-desc">3 cartas del mismo valor</div></div>
@@ -264,7 +349,6 @@
           <div class="mc black"><div class="mt">3<br>♠</div><div class="ms">♠</div><div class="mb">3<br>♠</div></div>
         </div>
       </div>
-
       <div class="hand-row">
         <div class="hand-rank">8</div>
         <div class="hand-info"><div class="hand-name">Doble Pareja</div><div class="hand-desc">2 parejas distintas</div></div>
@@ -276,7 +360,6 @@
           <div class="mc black"><div class="mt">A<br>♠</div><div class="ms">♠</div><div class="mb">A<br>♠</div></div>
         </div>
       </div>
-
       <div class="hand-row">
         <div class="hand-rank">9</div>
         <div class="hand-info"><div class="hand-name">Pareja</div><div class="hand-desc">2 cartas del mismo valor</div></div>
@@ -288,7 +371,6 @@
           <div class="mc black"><div class="mt">2<br>♠</div><div class="ms">♠</div><div class="mb">2<br>♠</div></div>
         </div>
       </div>
-
       <div class="hand-row">
         <div class="hand-rank">10</div>
         <div class="hand-info"><div class="hand-name">Carta Alta</div><div class="hand-desc">Ninguna combinación</div></div>
@@ -300,10 +382,8 @@
           <div class="mc red"><div class="mt">2<br>♥</div><div class="ms">♥</div><div class="mb">2<br>♥</div></div>
         </div>
       </div>
+    </div>
 
-    </div><!-- /tab-guide -->
-
-    <!-- TAB: Surrender -->
     <div class="tab-panel" id="tab-surrender">
       <div class="surrender-body">
         <div class="surrender-icon">🏳️</div>
@@ -317,18 +397,15 @@
       </div>
     </div>
 
-  </div><!-- /sheet-body -->
-</div><!-- /bottom-sheet -->
+  </div>
+</div>
 
-<!-- Telegram Mini App SDK -->
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
-<!-- Scripts (order matters) -->
 <script src="js/timer.js"></script>
 <script src="js/raise.js"></script>
 <script src="js/sheet.js"></script>
 <script src="js/api.js"></script>
 <script src="js/game.js"></script>
-
 </body>
-</html>
+  </html>
+              
