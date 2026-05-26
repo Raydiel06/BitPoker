@@ -143,32 +143,58 @@ const Game = (() => {
 
   // ── PANTALLAS ─────────────────────────────────────────
 
-  function _showWaiting() {
+    function _showWaiting() {
     gameStatus = 'waiting';
 
-    // Mostrar link de invitación
-    const inviteUrl = `${window.Telegram?.WebApp?.initDataUnsafe?.start_param
-      ? `https://t.me/${window.Telegram.WebApp.initDataUnsafe.bot_username}/poker?startapp=${gameId}`
-      : window.location.href}`;
+    // Construir invite link — usar t.me si viene de Telegram,
+    // si no usar la URL actual como fallback
+    const tg = window.Telegram?.WebApp;
+    let inviteUrl;
+
+    if (tg?.initDataUnsafe?.start_param) {
+      // Viene de Telegram Mini App — construir link t.me
+      // El bot username se puede hardcodear o leer del initData
+      const botUsername = 'neonfuturescasino_bot'; // tu bot
+      inviteUrl = `https://t.me/${botUsername}/poker?startapp=${gameId}`;
+    } else {
+      // Fallback para pruebas fuera de Telegram
+      const url = new URL(window.location.href);
+      url.searchParams.set('startapp', gameId);
+      inviteUrl = url.toString();
+    }
 
     dom.waitingInviteUrl.textContent = inviteUrl;
     dom.waitingScreen.classList.remove('hidden');
     dom.gameScreen.classList.remove('visible');
 
-    // Copiar link
     dom.btnCopyInvite.onclick = () => {
-      navigator.clipboard?.writeText(inviteUrl).then(() => {
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(inviteUrl).then(() => {
+          dom.btnCopyInvite.textContent = '✅ Copiado';
+          setTimeout(() => {
+            dom.btnCopyInvite.textContent = '📋 Copiar link';
+          }, 2000);
+        });
+      } else {
+        // Fallback para navegadores sin clipboard API
+        const el = document.createElement('textarea');
+        el.value = inviteUrl;
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand('copy');
+        document.body.removeChild(el);
         dom.btnCopyInvite.textContent = '✅ Copiado';
         setTimeout(() => {
           dom.btnCopyInvite.textContent = '📋 Copiar link';
         }, 2000);
-      });
+      }
     };
 
-    // Polling esperando que el oponente se una
+    // Polling esperando oponente
     _stopPolling();
     pollingId = setInterval(_pollWaiting, POLL_WAITING);
   }
+
 
   function _showGame() {
     gameStatus = 'active';
