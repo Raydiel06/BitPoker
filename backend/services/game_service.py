@@ -129,13 +129,24 @@ def get_state(db: Connection, game_id: str, user_id: int) -> dict:
     if not game:
         raise ValueError("Partida no encontrada.")
 
+    # Partida esperando oponente
+    if game["status"] == "waiting":
+        return {
+            "status": "waiting",
+            "game_id": game_id,
+            "is_active": False,
+            "your_cards": [],
+        }
+
     state = models.get_game_state(db, game_id)
     if not state:
         raise ValueError("Estado de partida no disponible.")
 
     engine = PokerEngine.from_dict(state)
-    return engine.state_for_player(user_id)
-
+    result = engine.state_for_player(user_id)
+    result["status"] = "active"
+    result["is_active"] = True
+    return result
 
 # ══════════════════════════════════════════════════════
 #  PROCESAR ACCIÓN
