@@ -86,31 +86,25 @@ const Game = (() => {
     await _joinOrReconnect();
   }
 
-  async function _joinOrReconnect() {
+    async function _joinOrReconnect() {
     try {
-      // Intentar obtener estado (reconexión o segundo jugador)
       const state = await API.getState(gameId);
 
-      if (state.status === 'waiting' || !state.is_active) {
-        // Partida existe pero aún no empezó — mostrar espera
+      if (state.status === 'waiting') {
         _showWaiting();
         return;
       }
 
-      // Partida activa — mostrar mesa
       _showGame();
       render(state);
       _startPollingIfNeeded(state);
 
     } catch (e) {
       if (e instanceof APIError && e.status === 404) {
-        // Primer intento del segundo jugador — unirse
+        // Podría ser el segundo jugador intentando unirse
         await _tryJoin();
-      } else if (e instanceof APIError && e.status === 200) {
-        // La partida está en waiting
-        _showWaiting();
       } else {
-        _showError('Error al conectar. Intenta cerrar y abrir de nuevo.');
+        _showError('Error al conectar. Intenta de nuevo.');
       }
     }
   }
@@ -118,9 +112,7 @@ const Game = (() => {
   async function _tryJoin() {
     try {
       const result = await API.joinGame(gameId);
-
-      // El segundo jugador recibe el estado directamente
-      const state = result.state_joiner || result.state_creator;
+      const state  = result.state_joiner || result.state_creator;
       if (state) {
         _showGame();
         render(state);
@@ -130,16 +122,18 @@ const Game = (() => {
       }
     } catch (e) {
       if (e instanceof APIError) {
-        if (e.message.includes('esperando') || e.status === 409) {
+        // "No puedes unirte a tu propia partida" — es el creador esperando
+        if (e.message.includes('propia') || e.status === 400) {
           _showWaiting();
         } else {
           _showError(e.message);
         }
       } else {
-        _showError('Error de conexión.');
+        _showWaiting(); // En caso de duda, mostrar espera
       }
     }
   }
+
 
   // ── PANTALLAS ─────────────────────────────────────────
 
